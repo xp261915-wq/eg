@@ -1,0 +1,63 @@
+import nltk
+from nltk.corpus import wordnet
+
+# Download resources
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+# Word to explore
+word = "dog"
+
+# Get synsets
+synsets = wordnet.synsets(word)
+
+print(f"Synsets for '{word}':")
+for s in synsets:
+    print(" -", s.name())
+
+print("\nDefinitions:")
+for s in synsets:
+    print(f"{s.name()} → {s.definition()}")
+
+# Synonyms & Antonyms
+synonyms = []
+antonyms = []
+
+for s in synsets:
+    for lemma in s.lemmas():
+        synonyms.append(lemma.name())
+        if lemma.antonyms():
+            antonyms.append(lemma.antonyms()[0].name())
+
+print("\nSynonyms:", set(synonyms))
+print("Antonyms:", set(antonyms))
+
+# Hypernyms (broader words)
+print("\nHypernyms (parent concepts):")
+for s in synsets:
+    print(f"{s.name()} → {[h.name() for h in s.hypernyms()]}")
+
+# Hyponyms (more specific words)
+print("\nHyponyms (child concepts):")
+for s in synsets:
+    print(f"{s.name()} → {[h.name() for h in s.hyponyms()]}")
+
+# --- MERONYMY (Part-of relationships) ---
+print("\nMeronyms (parts of the word):")
+for s in synsets:
+    part_meronyms = s.part_meronyms()     # physical parts
+    substance_meronyms = s.substance_meronyms()  # material
+    member_meronyms = s.member_meronyms() # group members
+
+    print(f"\n{s.name()}:")
+    print("  Part Meronyms:", [m.name() for m in part_meronyms])
+    print("  Substance Meronyms:", [m.name() for m in substance_meronyms])
+    print("  Member Meronyms:", [m.name() for m in member_meronyms])
+
+# --- HOLONYMY (Whole relationships) ---
+print("\nHolonyms (the word is part of these):")
+for s in synsets:
+    print(f"\n{s.name()}:")
+    print("  Part Holonyms:", [h.name() for h in s.part_holonyms()])
+    print("  Member Holonyms:", [h.name() for h in s.member_holonyms()])
+    print("  Substance Holonyms:", [h.name() for h in s.substance_holonyms()])
