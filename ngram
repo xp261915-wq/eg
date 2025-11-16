@@ -1,0 +1,65 @@
+from collections import Counter, defaultdict
+
+# ----------------------------------------
+# TRAINING CORPUS (Small Example)
+# ----------------------------------------
+corpus = """
+john sees the dog
+john pets the dog
+the dog sees john
+the dog runs
+""".lower().split()
+
+# Function to build N-gram counts
+def build_ngram_counts(words, n):
+    ngram_counts = Counter()
+    context_counts = Counter()
+    
+    for i in range(len(words) - n + 1):
+        ngram = tuple(words[i:i+n])
+        context = tuple(words[i:i+n-1])
+        ngram_counts[ngram] += 1
+        context_counts[context] += 1
+    
+    return ngram_counts, context_counts
+
+
+# ----------------------------------------
+# Compute N-gram Probabilities
+# ----------------------------------------
+def ngram_probability(sentence, n, ngram_counts, context_counts):
+    sentence = sentence.lower().split()
+    prob = 1.0
+    
+    for i in range(len(sentence) - n + 1):
+        ngram = tuple(sentence[i:i+n])
+        context = tuple(sentence[i:i+n-1])
+        
+        count_ngram = ngram_counts[ngram]
+        count_context = context_counts[context] if context else sum(context_counts.values())
+        
+        if count_ngram == 0 or count_context == 0:
+            return 0   # unseen n-gram
+        
+        prob *= count_ngram / count_context
+    
+    return prob
+
+
+# ----------------------------------------
+# Build Unigram, Bigram, Trigram Counts
+# ----------------------------------------
+uni_counts, uni_context = build_ngram_counts(corpus, 1)
+bi_counts, bi_context = build_ngram_counts(corpus, 2)
+tri_counts, tri_context = build_ngram_counts(corpus, 3)
+
+# ----------------------------------------
+# Test Sentence
+# ----------------------------------------
+sentence = "john sees the dog"
+
+print("Sentence:", sentence)
+
+print("\nUnigram Probability:", ngram_probability(sentence, 1, uni_counts, uni_context))
+print("Bigram Probability:", ngram_probability(sentence, 2, bi_counts, bi_context))
+print("Trigram Probability:", ngram_probability(sentence, 3, tri_counts, tri_context))
