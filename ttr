@@ -1,0 +1,35 @@
+import re
+
+text = """Regular expressions are powerful has 34! They help in tokenization.
+Regex-based tokenization includes: words, sentences, and punctuation."""
+
+# 1️⃣ Word Tokenization (letters only)
+word_tokens = re.findall(r'\b[A-Za-z]+\b', text)
+
+# 2️⃣ Word Tokenization (alphanumeric)
+alphanumeric_tokens = re.findall(r'\b[A-Za-z0-9]+\b', text)
+
+# 3️⃣ Word + punctuation tokenization
+punct_tokens = re.findall(r"[\w']+|[.,!?;]", text)
+
+# 4️⃣ Sentence Tokenization
+sentence_tokens = re.split(r'(?<=[.!?]) +', text)
+
+# 5️⃣ Type–Token Ratio (based on basic word tokens)
+types = set(word_tokens)
+ttr = len(types) / len(word_tokens)
+
+print("1. Word Tokens (A–Z only):")
+print(word_tokens)
+
+print("\n2. Alphanumeric Tokens:")
+print(alphanumeric_tokens)
+
+print("\n3. Word + Punctuation Tokens:")
+print(punct_tokens)
+
+print("\n4. Sentence Tokens:")
+print(sentence_tokens)
+
+print("\n5. Type–Token Ratio (TTR):")
+print(f"TTR = {len(types)} / {len(word_tokens)} = {ttr:.3f}")
