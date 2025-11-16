@@ -1,0 +1,46 @@
+import re
+
+
+# Email ID (general pattern)
+email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$'
+
+# Mobile Number (10 digits, allows optional country code like +91)
+mobile_pattern = r'^(\+?\d{1,3}[- ]?)?\d{10}$'
+
+# Landline Number (e.g., STD code + number: 022-23456789 or 044 23456789)
+landline_pattern = r'^\d{2,5}[- ]?\d{6,8}$'
+
+
+# -------------------------------
+# VALIDATION FUNCTIONS
+# -------------------------------
+
+def validate_email(email):
+    return bool(re.match(email_pattern, email))
+
+def validate_mobile(mobile):
+    return bool(re.match(mobile_pattern, mobile))
+
+def validate_landline(landline):
+    return bool(re.match(landline_pattern, landline))
+
+
+# -------------------------------
+# SAMPLE TESTS
+# -------------------------------
+
+emails = ["test@example.com", "user.name+1@gmail.co", "invalid@com"]
+mobiles = ["9876543210", "+91 9876543210", "12345"]
+landlines = ["022-23456789", "044 2345678", "123"]
+
+print("Email Validation:")
+for e in emails:
+    print(e, "->", validate_email(e))
+
+print("\nMobile Number Validation:")
+for m in mobiles:
+    print(m, "->", validate_mobile(m))
+
+print("\nLandline Number Validation:")
+for l in landlines:
+    print(l, "->", validate_landline(l))
