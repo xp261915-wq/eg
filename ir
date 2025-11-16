@@ -1,0 +1,31 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# --- Document Collection ---
+documents = [
+    "Python is a programming language.",
+    "Machine learning uses Python for building models.",
+    "Information retrieval is about finding relevant documents.",
+    "Python can be used for data science."
+]
+
+# --- User Query ---
+query = "python for data science"
+
+# --- TF-IDF Vectorization ---
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(documents)   # document vectors
+query_vec = vectorizer.transform([query])            # query vector
+
+# --- Compute Similarity ---
+similarity_scores = cosine_similarity(query_vec, tfidf_matrix).flatten()
+
+# --- Rank Documents ---
+ranked_docs = similarity_scores.argsort()[::-1]
+
+# --- Display Results ---
+print("Search Query:", query)
+print("\nDocument Ranking (Most relevant first):\n")
+
+for idx in ranked_docs:
+    print(f"Score: {similarity_scores[idx]:.4f}  →  {documents[idx]}")
