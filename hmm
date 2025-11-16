@@ -1,0 +1,73 @@
+# ----------------------------------------------------------
+# Simple HMM Implementation in Python (No external libraries)
+# ----------------------------------------------------------
+
+# States (hidden)
+states = ["Rainy", "Sunny"]
+
+# Observations
+observations = ["walk", "shop", "clean"]
+
+# Observation sequence to evaluate
+sequence = ["walk", "shop", "clean"]
+
+# Initial probabilities
+start_prob = {
+    "Rainy": 0.6,
+    "Sunny": 0.4
+}
+
+# Transition probabilities
+transition_prob = {
+    "Rainy": {"Rainy": 0.7, "Sunny": 0.3},
+    "Sunny": {"Rainy": 0.4, "Sunny": 0.6}
+}
+
+# Emission probabilities
+emission_prob = {
+    "Rainy": {"walk": 0.1, "shop": 0.4, "clean": 0.5},
+    "Sunny": {"walk": 0.6, "shop": 0.3, "clean": 0.1}
+}
+
+
+# ----------------------------------------------------------
+# Viterbi Algorithm Implementation
+# ----------------------------------------------------------
+def viterbi(sequence, states, start_p, trans_p, emit_p):
+    V = [{}]  # probability table
+    path = {}  # best path so far
+
+    # Step 1: Initialization
+    for s in states:
+        V[0][s] = start_p[s] * emit_p[s][sequence[0]]
+        path[s] = [s]
+
+    # Step 2: Recursion
+    for t in range(1, len(sequence)):
+        V.append({})
+        new_path = {}
+
+        for curr_state in states:
+            (prob, prev_state) = max(
+                (V[t - 1][y] * trans_p[y][curr_state] * emit_p[curr_state][sequence[t]], y)
+                for y in states
+            )
+
+            V[t][curr_state] = prob
+            new_path[curr_state] = path[prev_state] + [curr_state]
+
+        path = new_path
+
+    # Step 3: Termination
+    (final_prob, final_state) = max((V[-1][s], s) for s in states)
+    return final_prob, path[final_state]
+
+
+# ----------------------------------------------------------
+# Run HMM on the observation sequence
+# ----------------------------------------------------------
+probability, best_path = viterbi(sequence, states, start_prob, transition_prob, emission_prob)
+
+print("Observation sequence:", sequence)
+print("Most likely hidden states:", best_path)
+print("Probability of this path:", probability)
