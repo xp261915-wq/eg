@@ -1,0 +1,14 @@
+from collections import Counter
+import re
+
+def word_frequency(text):
+    # Normalize: lowercase and keep only words
+    words = re.findall(r'\b\w+\b', text.lower())
+    return Counter(words)
+
+# Example usage
+text = "Hello world! hello Smruti.Hello Smruti how are you ?. This is a world of words."
+freq = word_frequency(text)
+
+for word, count in freq.items():
+    print(f"{word}: {count}")
