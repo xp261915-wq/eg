@@ -1,0 +1,100 @@
+import nltk
+from nltk import PCFG
+from nltk.parse import pchart
+
+
+# ============================================================
+# 1. AMBIGUOUS PCFG
+# ============================================================
+
+grammar_ambiguous = PCFG.fromstring("""
+S -> NP VP [1.0]
+
+NP -> NP PP [0.4] | 'John' [0.3] | Det N [0.3]
+Det -> 'the' [1.0]
+
+VP -> V NP [0.7] | VP PP [0.3]
+V -> 'sees' [1.0]
+
+N -> 'dog' [0.5] | 'telescope' [0.5]
+
+PP -> P NP [1.0]
+P -> 'with' [1.0]
+""")
+
+parser_ambiguous = pchart.InsideChartParser(grammar_ambiguous)
+
+
+# ============================================================
+# 2. UNAMBIGUOUS PCFG — VP attachment only
+# ============================================================
+
+grammar_vp_attach = PCFG.fromstring("""
+S -> NP VP [1.0]
+
+NP -> 'John' [0.5]
+NP -> Det N [0.5]
+Det -> 'the' [1.0]
+
+VP -> V NP PP [1.0]
+V -> 'sees' [1.0]
+
+N -> 'dog' [0.5]
+N -> 'telescope' [0.5]
+
+PP -> P NP [1.0]
+P -> 'with' [1.0]
+""")
+
+parser_vp_attach = pchart.InsideChartParser(grammar_vp_attach)
+
+
+# ============================================================
+# 3. UNAMBIGUOUS PCFG — NP attachment only
+# ============================================================
+
+grammar_np_attach = PCFG.fromstring("""
+S -> NP VP [1.0]
+
+NP -> 'John' [0.3]
+NP -> Det N PP [0.7]
+Det -> 'the' [1.0]
+
+VP -> V NP [1.0]
+V -> 'sees' [1.0]
+
+N -> 'dog' [0.5]
+N -> 'telescope' [0.5]
+
+PP -> P NP [1.0]
+P -> 'with' [1.0]
+""")
+
+parser_np_attach = pchart.InsideChartParser(grammar_np_attach)
+
+
+# ============================================================
+# 4. Parse the sentence using each grammar
+# ============================================================
+
+sentence = "John sees the dog with the telescope".split()
+
+def run_parser(parser, title):
+    print("\n=================================================")
+    print(title)
+    print("=================================================")
+
+    parses = list(parser.parse(sentence))
+    print(f"Number of parses: {len(parses)}\n")
+
+    for i, tree in enumerate(parses, 1):
+        print(f"Parse {i}:")
+        print(tree)
+        print(f"Probability: {tree.prob()}\n")
+        tree.pretty_print()
+
+
+# Run all three grammars
+run_parser(parser_ambiguous, "AMBIGUOUS PCFG")
+run_parser(parser_vp_attach, "UNAMBIGUOUS PCFG — VP ATTACHMENT")
+run_parser(parser_np_attach, "UNAMBIGUOUS PCFG — NP ATTACHMENT")
